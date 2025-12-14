@@ -1,0 +1,49 @@
+package main
+
+import (
+	"github.com/erichayter/bike-beacon-backend/internal/models"
+	"github.com/google/uuid"
+	"net/http"
+	"strconv"
+)
+
+func (app *application) getStation(w http.ResponseWriter, r *http.Request) {
+	id, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		app.errorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// query from the model otherwise
+	station, err := app.repairStations.Get(id)
+	if err != nil {
+		app.errorJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, station, http.Header{})
+}
+
+func (app *application) getStations(w http.ResponseWriter, r *http.Request) {
+	lng, err := strconv.ParseFloat(r.URL.Query().Get("lng"), 64)
+	if err != nil {
+		app.errorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	lat, err := strconv.ParseFloat(r.URL.Query().Get("lat"), 64)
+	if err != nil {
+		app.errorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	location := models.Point{Lng: lng, Lat: lat}
+
+	stations, err := app.repairStations.GetNearby(location)
+	if err != nil {
+		app.errorJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, stations, http.Header{})
+}

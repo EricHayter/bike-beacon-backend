@@ -1,0 +1,67 @@
+ ____  _ _          ____
+| __ )(_) | _____  | __ )  ___  __ _  ___ ___  _ __
+|  _ \| | |/ / _ \ |  _ \ / _ \/ _` |/ __/ _ \| '_ \
+| |_) | |   <  __/ | |_) |  __/ (_| | (_| (_) | | | |
+|____/|_|_|\_\___| |____/ \___|\__,_|\___\___/|_| |_|
+
+Notes for as I am writing bike beacon.
+
+===============================================================================
+Postgis
+===============================================================================
+going to be using postgis for storing the coordinates of bike repair station
+locations.
+
+Here's an example of how to create a query using the geography type. Note use
+this over a point since it calculates distances as if the points are on a sphere
+(the earth).
+
+CREATE TABLE repair_stations (
+    repair_station_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    location GEOGRAPHY(POINT, 4326) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+What GEOGRAPHY(POINT, 4326) means:
+- POINT - Single lat/lng coordinate
+- 4326 - SRID (Spatial Reference ID) for WGS84 (standard GPS coordinates)
+
+
+It's apparently very important to have an index on geolocation data for
+performance reasons.
+CREATE INDEX idx_repair_stations_location ON repair_stations USING GIST(location);
+
+Creating datapoints:
+INSERT INTO repair_stations (name, location) VALUES
+    ('Downtown Station', ST_MakePoint(-122.4194, 37.7749)::geography);
+
+*******************************************************************************
+IMPORTANT QUERIES
+*******************************************************************************
+FIND STATIONS WITHIN 5KM OF A LOCATION
+  SELECT
+      repair_station_id,
+      name,
+      ST_Distance(location, ST_MakePoint(-122.4194, 37.7749)::geography) AS distance_meters
+  FROM repair_stations
+  WHERE ST_DWithin(
+      location,
+      ST_MakePoint(-122.4194, 37.7749)::geography,
+      5000  -- 5000 meters = 5km
+  )
+  ORDER BY distance_meters;
+
+  2. Find Nearest Stations
+
+FIND 10 NEAREST STATIONS
+  SELECT
+      repair_station_id,
+      name,
+      ST_Distance(location, ST_MakePoint(-122.4194, 37.7749)::geography) AS distance_meters
+  FROM repair_stations
+  ORDER BY location <-> ST_MakePoint(-122.4194, 37.7749)::geography
+  LIMIT 10;
+
+
+
