@@ -1,0 +1,10 @@
+===============================================================================
+DB Design
+===============================================================================
+
+Rough approximation for the schema on drawdb
+https://www.drawdb.app/editor?shareId=695f2169defa552b4bde9e42847e0f54
+
+Note that the above schema can be exported for the SQL but still must be
+updated to include the geography types and to provide default values for many
+of the fields (including UUID, and timestamp).
