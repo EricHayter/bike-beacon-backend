@@ -1,0 +1,23 @@
+services:
+  postgis:
+    image: postgis/postgis
+    container_name: bike-beacon-db
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  bike_beacon_server:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      postgis:
+        condition: service_healthy
+
