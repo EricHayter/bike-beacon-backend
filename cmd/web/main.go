@@ -37,6 +37,8 @@ func main() {
 	}
 	defer db.Close(context.Background())
 
+	app.repairStations = &models.RepairStationModel{DB: db}
+
 	app.logger.Info("starting server on", "addr", addr)
 	err = http.ListenAndServe(addr, app.routes())
 	app.logger.Error(err.Error())

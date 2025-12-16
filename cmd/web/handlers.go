@@ -15,7 +15,7 @@ func (app *application) getStation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// query from the model otherwise
-	station, err := app.repairStations.Get(id)
+	station, err := app.repairStations.Get(r.Context(), id)
 	if err != nil {
 		app.errorJSON(w, http.StatusNotFound, err.Error())
 		return
@@ -39,7 +39,7 @@ func (app *application) getStations(w http.ResponseWriter, r *http.Request) {
 
 	location := models.Point{Lng: lng, Lat: lat}
 
-	stations, err := app.repairStations.GetNearby(location)
+	stations, err := app.repairStations.GetNearby(r.Context(), location)
 	if err != nil {
 		app.errorJSON(w, http.StatusNotFound, err.Error())
 		return
