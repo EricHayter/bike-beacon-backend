@@ -47,3 +47,14 @@ func (app *application) getStations(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, stations, http.Header{})
 }
+
+func (app *application) getTools(w http.ResponseWriter, r *http.Request) {
+	stationId, err := uuid.Parse(r.PathValue("id"))
+	tools, err := app.tools.Get(r.Context(), stationId)
+	if err != nil {
+		app.errorJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, tools, http.Header{})
+}
