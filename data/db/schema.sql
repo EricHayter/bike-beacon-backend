@@ -53,6 +53,13 @@ CREATE TABLE IF NOT EXISTS "repair_station_report" (
 	PRIMARY KEY("report_id")
 );
 
+CREATE TABLE IF NOT EXISTS "repair_station_photo" (
+	"repair_station_photo_id" UUID NOT NULL UNIQUE,
+	"repair_station_id" UUID NOT NULL,
+	"photo_key" VARCHAR(512) NOT NULL,
+	PRIMARY KEY("repair_station_photo_id")
+);
+
 ALTER TABLE "tool"
 ADD FOREIGN KEY("repair_station_id") REFERENCES "repair_station"("repair_station_id")
 ON UPDATE CASCADE ON DELETE CASCADE;
@@ -62,3 +69,6 @@ ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE "repair_station_report"
 ADD FOREIGN KEY("repair_station_id") REFERENCES "repair_station"("repair_station_id")
 ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE "repair_station_photo"
+ADD FOREIGN KEY("repair_station_id") REFERENCES "repair_station"("repair_station_id")
+ON UPDATE NO ACTION ON DELETE NO ACTION;
