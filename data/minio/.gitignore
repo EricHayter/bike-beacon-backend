@@ -1,4 +1,12 @@
-# Ignore everything in this directory
+# Ignore everything by default
 *
-# Except this file
+
+# Except these
 !.gitignore
+!init.sh
+
+# Track test images only
+!images/
+!images/*.png
+!images/*.jpg
+!images/*.jpeg
