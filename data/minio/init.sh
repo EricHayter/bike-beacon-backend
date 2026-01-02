@@ -22,5 +22,14 @@ mc anonymous set download local/images
 
 echo "Bucket 'images' configured for public download access"
 
+# Upload seed images if they exist
+if [ -d "/data/seed-images" ] && [ "$(ls -A /data/seed-images)" ]; then
+  echo "Uploading seed images to bucket..."
+  mc cp --recursive /data/seed-images/* local/images/
+  echo "Seed images uploaded successfully"
+else
+  echo "No seed images found, skipping upload"
+fi
+
 # Wait for the MinIO process to keep container running
 wait

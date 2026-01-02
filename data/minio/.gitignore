@@ -5,8 +5,6 @@
 !.gitignore
 !init.sh
 
-# Track test images only
-!images/
-!images/*.png
-!images/*.jpg
-!images/*.jpeg
+# Track seed images that get uploaded on startup
+!seed-images/
+!seed-images/*
