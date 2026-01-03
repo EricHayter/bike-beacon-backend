@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/erichayter/bike-beacon-backend/internal/models"
 	"github.com/google/uuid"
 	"net/http"
@@ -57,4 +58,22 @@ func (app *application) getTools(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.writeJSON(w, http.StatusOK, tools, http.Header{})
+}
+
+func (app *application) getPhotos(w http.ResponseWriter, r *http.Request) {
+	stationId, err := uuid.Parse(r.PathValue("id"))
+	photos, err := app.repairStationPhotos.Get(r.Context(), stationId)
+	if err != nil {
+		app.errorJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+	var photoUrls []string
+	for _, photo := range photos {
+		// TODO this logically should probably be reading from a configuration
+		// or .env file. Fix this once done so that it's not hardcoded
+		photoUrl := fmt.Sprintf("192.168.0.138:9000/images/%s", photo.PhotoKey)
+		photoUrls = append(photoUrls, photoUrl)
+	}
+
+	app.writeJSON(w, http.StatusOK, photoUrls, http.Header{})
 }

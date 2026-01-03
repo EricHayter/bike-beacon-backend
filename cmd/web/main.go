@@ -13,9 +13,10 @@ import (
 )
 
 type application struct {
-	logger         *slog.Logger
-	repairStations *models.RepairStationModel
-	tools          *models.ToolModel
+	logger         			*slog.Logger
+	repairStations 			*models.RepairStationModel
+	repairStationPhotos 	*models.RepairStationPhotoModel
+	tools          			*models.ToolModel
 }
 
 func main() {
@@ -39,6 +40,7 @@ func main() {
 	defer db.Close(context.Background())
 
 	app.repairStations = &models.RepairStationModel{DB: db}
+	app.repairStationPhotos = &models.RepairStationPhotoModel{DB: db}
 	app.tools = &models.ToolModel{DB: db}
 
 	app.logger.Info("starting server on", "addr", addr)
