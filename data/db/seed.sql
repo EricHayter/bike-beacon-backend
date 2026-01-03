@@ -176,3 +176,22 @@ WITH rideau_tools AS (
 )
 INSERT INTO tool_report (tool_id, created_at, report_type)
 SELECT tool_id, NOW() - INTERVAL '1 day', 'tool_present'::tool_report_type FROM rideau_tools;
+
+-- Add some images to a few of the stations --
+WITH parliament_station AS (
+    SELECT repair_station_id FROM repair_station WHERE address_str LIKE '%Parliament Hill%'
+)
+INSERT INTO repair_station_photo (repair_station_photo_id, repair_station_id, photo_key)
+SELECT gen_random_uuid(), repair_station_id, 'photo.png' FROM parliament_station;
+
+WITH byward_station AS (
+    SELECT repair_station_id FROM repair_station WHERE address_str LIKE '%ByWard Market%'
+)
+INSERT INTO repair_station_photo (repair_station_photo_id, repair_station_id, photo_key)
+SELECT gen_random_uuid(), repair_station_id, 'photo.png' FROM byward_station;
+
+WITH uottawa_station AS (
+    SELECT repair_station_id FROM repair_station WHERE address_str LIKE '%University of Ottawa%'
+)
+INSERT INTO repair_station_photo (repair_station_photo_id, repair_station_id, photo_key)
+SELECT gen_random_uuid(), repair_station_id, 'photo.png' FROM uottawa_station;
