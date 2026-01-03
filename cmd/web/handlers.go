@@ -26,13 +26,23 @@ func (app *application) getStation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getStations(w http.ResponseWriter, r *http.Request) {
-	lng, err := strconv.ParseFloat(r.URL.Query().Get("lng"), 64)
+	lngStr := r.URL.Query().Get("lng")
+	if lngStr == "" {
+		app.errorJSON(w, http.StatusBadRequest, "Missing \"lng\" in query parameters")
+		return
+	}
+	lng, err := strconv.ParseFloat(lngStr, 64)
 	if err != nil {
 		app.errorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	lat, err := strconv.ParseFloat(r.URL.Query().Get("lat"), 64)
+	latStr := r.URL.Query().Get("lat")
+	if latStr == "" {
+		app.errorJSON(w, http.StatusBadRequest, "Missing \"lat\" in query parameters")
+		return
+	}
+	lat, err := strconv.ParseFloat(latStr, 64)
 	if err != nil {
 		app.errorJSON(w, http.StatusBadRequest, err.Error())
 		return
