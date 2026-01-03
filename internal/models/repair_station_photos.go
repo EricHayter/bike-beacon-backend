@@ -1,63 +1,51 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"context"
-	"errors"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
-//	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-//	"github.com/aws/smithy-go"
 )
 
 type RepairStationPhoto struct {
 	Id 				uuid.UUID
 	RepairStationId uuid.UUID
 	PhotoKey      	string
+	S3Url			string
 }
 
 type RepairStationPhotoModel struct {
 	DB 			*pgx.Conn
-	S3Client 	*s3.Client
 }
 
-func (m *RepairStationPhotoModel) Get(ctx context.Context, stationId uuid.UUID) (*RepairStationPhoto, error) {
+func (m *RepairStationPhotoModel) Get(ctx context.Context, stationId uuid.UUID) ([]RepairStationPhoto, error) {
 	query := `SELECT
 	repair_station_photo_id,
 	repair_station_id,
 	photo_key
 	FROM repair_station_photo
 	WHERE repair_station_id = $1`
-	row := m.DB.QueryRow(ctx, query, stationId)
-
-	repairStationPhoto := RepairStationPhoto{}
-	err := row.Scan(&repairStationPhoto.Id, &repairStationPhoto.RepairStationId, &repairStationPhoto.PhotoKey)
+	rows, err := m.DB.Query(ctx, query, stationId)
 	if err != nil {
 		return nil, err
 	}
 
-	// pull the data now from the S3 storage
-	result, err := m.S3Client.GetObject(ctx, &s3.GetObjectInput{
-		Bucket: aws.String("iamges"),
-		Key:    aws.String(repairStationPhoto.PhotoKey),
-	})
-	if err != nil {
-		var noKey *types.NoSuchKey
-		if errors.As(err, &noKey) {
-			err = noKey
+	var repairStationPhotos []RepairStationPhoto
+	for rows.Next() {
+		repairStationPhoto := RepairStationPhoto{}
+		err := rows.Scan(&repairStationPhoto.Id, &repairStationPhoto.RepairStationId, &repairStationPhoto.PhotoKey)
+		if err != nil {
+			return nil, err
 		}
-		return nil, err
+
+		repairStationPhoto.S3Url = fmt.Sprintf("")
 	}
-	defer result.Body.Close()
 
-	// pass in the data into the struct?
-//	result.Body.Read()
 
-	return &repairStationPhoto, nil
+
+	return repairStationPhotos, nil
 }
 
 ///func (m *RepairStationModel) GetNearby(ctx context.Context, coordinates Point) ([]RepairStation, error) {
