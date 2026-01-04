@@ -2,7 +2,7 @@ package main
 
 import "net/http"
 
-func (app *application) routes() *http.ServeMux {
+func (app *application) routes() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /stations/{id}", app.getStation)
@@ -10,5 +10,5 @@ func (app *application) routes() *http.ServeMux {
 	mux.HandleFunc("GET /stations/{id}/photos", app.getPhotos)
 	mux.HandleFunc("GET /stations", app.getStations)
 
-	return mux
+	return app.enableCORS(mux)
 }
