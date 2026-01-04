@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"context"
 	"time"
@@ -16,7 +16,7 @@ type RepairStation struct {
 }
 
 type RepairStationModel struct {
-	DB *pgx.Conn
+	DB *pgxpool.Pool
 }
 
 func (m *RepairStationModel) Get(ctx context.Context, id uuid.UUID) (*RepairStation, error) {
@@ -71,6 +71,7 @@ func (m *RepairStationModel) GetNearby(ctx context.Context, coordinates Point) (
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var repairStations []RepairStation
 	for rows.Next() {

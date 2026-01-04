@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"context"
 )
@@ -14,7 +14,7 @@ type Tool struct {
 }
 
 type ToolModel struct {
-	DB *pgx.Conn
+	DB *pgxpool.Pool
 }
 
 func (m *ToolModel) Get(ctx context.Context, stationId uuid.UUID) ([]Tool, error) {
@@ -29,6 +29,7 @@ func (m *ToolModel) Get(ctx context.Context, stationId uuid.UUID) ([]Tool, error
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var tools []Tool
 	for rows.Next() {

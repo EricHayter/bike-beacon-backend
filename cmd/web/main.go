@@ -9,7 +9,7 @@ import (
 
 	"github.com/erichayter/bike-beacon-backend/internal/models"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type application struct {
@@ -37,7 +37,7 @@ func main() {
 		app.logger.Error(err.Error())
 		os.Exit(1)
 	}
-	defer db.Close(context.Background())
+	defer db.Close()
 
 	app.repairStations = &models.RepairStationModel{DB: db}
 	app.repairStationPhotos = &models.RepairStationPhotoModel{DB: db}
@@ -49,8 +49,8 @@ func main() {
 	os.Exit(1)
 }
 
-func openDB(conn_str string) (*pgx.Conn, error) {
-	db, err := pgx.Connect(context.Background(), conn_str)
+func openDB(conn_str string) (*pgxpool.Pool, error) {
+	db, err := pgxpool.New(context.Background(), conn_str)
 	if err != nil {
 		return nil, err
 	}

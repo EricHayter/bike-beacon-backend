@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"context"
 )
@@ -13,7 +13,7 @@ type RepairStationPhoto struct {
 }
 
 type RepairStationPhotoModel struct {
-	DB 			*pgx.Conn
+	DB 			*pgxpool.Pool
 }
 
 func (m *RepairStationPhotoModel) Get(ctx context.Context, stationId uuid.UUID) ([]RepairStationPhoto, error) {
@@ -26,6 +26,7 @@ func (m *RepairStationPhotoModel) Get(ctx context.Context, stationId uuid.UUID) 
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var repairStationPhotos []RepairStationPhoto
 	for rows.Next() {
