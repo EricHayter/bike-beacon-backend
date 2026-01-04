@@ -81,7 +81,7 @@ func (app *application) getPhotos(w http.ResponseWriter, r *http.Request) {
 	for _, photo := range photos {
 		// TODO this logically should probably be reading from a configuration
 		// or .env file. Fix this once done so that it's not hardcoded
-		photoUrl := fmt.Sprintf("192.168.0.138:9000/images/%s", photo.PhotoKey)
+		photoUrl := fmt.Sprintf("http://192.168.0.138:9000/images/%s", photo.PhotoKey)
 		photoUrls = append(photoUrls, photoUrl)
 	}
 
