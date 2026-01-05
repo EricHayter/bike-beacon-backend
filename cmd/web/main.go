@@ -17,6 +17,7 @@ type application struct {
 	repairStations 			*models.RepairStationModel
 	repairStationPhotos 	*models.RepairStationPhotoModel
 	tools          			*models.ToolModel
+	toolTypes       		*models.ToolTypeModel
 }
 
 func main() {
@@ -42,6 +43,7 @@ func main() {
 	app.repairStations = &models.RepairStationModel{DB: db}
 	app.repairStationPhotos = &models.RepairStationPhotoModel{DB: db}
 	app.tools = &models.ToolModel{DB: db}
+	app.toolTypes = &models.ToolTypeModel{DB: db}
 
 	app.logger.Info("starting server on", "addr", addr)
 	err = http.ListenAndServe(addr, app.routes())

@@ -87,3 +87,13 @@ func (app *application) getPhotos(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, photoUrls, http.Header{})
 }
+
+func (app *application) getToolTypes(w http.ResponseWriter, r *http.Request) {
+	toolTypes, err := app.toolTypes.Get(r.Context())
+	if err != nil {
+		app.errorJSON(w, http.StatusNotFound, err.Error())
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, toolTypes, http.Header{})
+}

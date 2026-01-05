@@ -9,6 +9,7 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("GET /stations/{id}/tools", app.getTools)
 	mux.HandleFunc("GET /stations/{id}/photos", app.getPhotos)
 	mux.HandleFunc("GET /stations", app.getStations)
+	mux.HandleFunc("GET /tool-types", app.getToolTypes)
 
 	return app.enableCORS(mux)
 }
